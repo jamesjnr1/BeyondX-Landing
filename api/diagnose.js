@@ -61,5 +61,27 @@ module.exports = async function handler(req, res) {
     connectionTest = { success: false, error: err.message };
   }
 
-  return res.status(200).json({ report, clientError, connectionTest });
+  // Actually attempt a real Resend send and report the exact error.
+  let resendTest = null;
+  try {
+    const { Resend } = require('resend');
+    if (!resendKey) {
+      throw new Error('RESEND_API_KEY not set, skipping send test.');
+    }
+    if (!notifyEmail) {
+      throw new Error('NOTIFY_EMAIL not set, skipping send test.');
+    }
+    const resendClient = new Resend(resendKey);
+    const result = await resendClient.emails.send({
+      from: 'BeyondX Website <onboarding@resend.dev>',
+      to: [notifyEmail],
+      subject: 'BeyondX diagnostic test email',
+      html: '<p>This is a test email from the /api/diagnose endpoint to confirm Resend delivery works.</p>',
+    });
+    resendTest = { success: !result.error, data: result.data || null, error: result.error || null };
+  } catch (err) {
+    resendTest = { success: false, error: err.message };
+  }
+
+  return res.status(200).json({ report, clientError, connectionTest, resendTest });
 };

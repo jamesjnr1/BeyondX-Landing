@@ -16,12 +16,26 @@
 const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+let supabase = null;
+try {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.');
+  }
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+} catch (err) {
+  console.error('Supabase client failed to initialize:', err);
+}
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend = null;
+try {
+  if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  } else {
+    console.error('RESEND_API_KEY is not set — email notifications will be skipped.');
+  }
+} catch (err) {
+  console.error('Resend client failed to initialize (non-fatal):', err);
+}
 
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
 if (!NOTIFY_EMAIL) {
@@ -38,8 +52,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  if (!NOTIFY_EMAIL) {
-    return res.status(500).json({ error: 'Server is misconfigured: NOTIFY_EMAIL is not set.' });
+  if (!supabase) {
+    return res.status(500).json({ error: 'Server is misconfigured (database connection). Please try again later.' });
   }
 
   try {
@@ -60,25 +74,29 @@ module.exports = async function handler(req, res) {
       // we'd rather you get notified than lose the lead entirely.
     }
 
-    // 2. Send the notification email.
-    const { error: emailError } = await resend.emails.send({
-      from: 'BeyondX Website <onboarding@resend.dev>', // test sender — swap for your own verified domain later
-      to: [NOTIFY_EMAIL],
-      reply_to: email,
-      subject: 'New "Get in touch" request — BeyondX',
-      html: `
-        <div style="font-family: sans-serif; max-width: 480px;">
-          <h2 style="color:#1A4731;">New contact request</h2>
-          <p>Someone just submitted the "Get in touch" form on the BeyondX landing page.</p>
-          <p style="font-size:1.1rem;"><strong>Email:</strong> ${email}</p>
-          <p style="color:#6B7280; font-size:0.85rem;">Reply directly to this email to respond to them.</p>
-        </div>
-      `,
-    });
+    // 2. Send the notification email, if Resend is configured.
+    if (resend && NOTIFY_EMAIL) {
+      const { error: emailError } = await resend.emails.send({
+        from: 'BeyondX Website <onboarding@resend.dev>', // test sender — swap for your own verified domain later
+        to: [NOTIFY_EMAIL],
+        reply_to: email,
+        subject: 'New "Get in touch" request — BeyondX',
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px;">
+            <h2 style="color:#1A4731;">New contact request</h2>
+            <p>Someone just submitted the "Get in touch" form on the BeyondX landing page.</p>
+            <p style="font-size:1.1rem;"><strong>Email:</strong> ${email}</p>
+            <p style="color:#6B7280; font-size:0.85rem;">Reply directly to this email to respond to them.</p>
+          </div>
+        `,
+      });
 
-    if (emailError) {
-      console.error('Resend send error:', emailError);
-      return res.status(502).json({ error: 'Saved your request, but the notification email failed to send.' });
+      if (emailError) {
+        console.error('Resend send error:', emailError);
+        return res.status(502).json({ error: 'Saved your request, but the notification email failed to send.' });
+      }
+    } else {
+      console.error('Skipped email notification: resend client or NOTIFY_EMAIL missing.');
     }
 
     return res.status(200).json({ ok: true });

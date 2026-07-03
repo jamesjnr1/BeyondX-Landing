@@ -132,6 +132,22 @@ header {
 .hero-inner.hero-split { max-width: 56rem; }
 .hero-paths { margin-top: 2rem; display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
 .hero-path {
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 1rem;
+  background: rgba(255,255,255,0.06); padding: 1.5rem;
+}
+.hero-path-label {
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  color: #8FE3B0; margin-bottom: 0.5rem;
+}
+.hero-path .lead { margin-top: 0; max-width: none; font-size: 0.9375rem; }
+.hero-path .btn { margin-top: 1rem; }
+@media (min-width: 768px) {
+  .hero-paths { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+}
+=======
+.hero-inner.hero-split { max-width: 56rem; }
+.hero-paths { margin-top: 2rem; display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.hero-path {
   padding: 1.5rem;
 }
 .hero-path-label {
@@ -164,13 +180,12 @@ header {
         gap: 1.25rem;
     }
 }
+>>>>>>> 7584b43c73afe51cf14733463d87856e0936db45
+
 .hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #8FE3B0;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 999px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);
+  padding: 0.3rem 0.85rem; font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.85);
 }
 .hero-badge .dot { height: 0.375rem; width: 0.375rem; border-radius: 50%; background: #6FCF97; }
 .hero h1 {
@@ -233,13 +248,11 @@ section.pad { padding: 6rem 0; }
 .how-video { order: 1; }
 .how-text { order: 2; }
 .how-grid { display: grid; grid-template-columns: 1fr; gap: 1.75rem; margin-top: 2rem; }
-.how-card {  }
 .how-card-top { display: none; align-items: center; justify-content: flex-end; }
 .how-num { font-size: 1.5rem; font-weight: 700; color: var(--muted-foreground); display: block; margin-bottom: 0.5rem; }
 .how-card h3 { margin-top: 0.5rem; font-size: 1.25rem; font-weight: 600; }
 .how-card p { margin-top: 0.5rem; font-size: 0.875rem; line-height: 1.65; color: var(--muted-foreground); }
 .how-tabs-layout { display: grid; grid-template-columns: 1fr; gap: 2.5rem; margin-top: 3rem; }
-.how-panel { }
 .how-panel-label { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--primary); margin-bottom: 1rem; }
 @media (min-width: 768px) {
   .how-layout { grid-template-columns: 1.3fr 1fr; gap: 3rem; align-items: stretch; }
@@ -268,15 +281,11 @@ section.pad { padding: 6rem 0; }
 /* ── TESTIMONIAL ── */
 .testimonial-section { padding: 5rem 0; background: var(--secondary); }
 .testimonial-grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr; }
-.testimonial-item blockquote {
-    font-size: 1.1875rem;
-    font-weight: 500;
-    line-height: 1.6;
-    color: var(--foreground);
-}
+.testimonial-item blockquote { font-size: 1.0625rem; font-weight: 500; line-height: 1.6; color: var(--foreground); }
 .testimonial-item .attr { margin-top: 1rem; font-size: 0.8125rem; color: var(--muted-foreground); }
 @media (min-width: 860px) {
   .testimonial-grid { grid-template-columns: 1.4fr 1fr 1fr; gap: 2.5rem; }
+  .testimonial-item:first-child blockquote { font-size: 1.1875rem; }
 }
 
 /* ── CTA ── */
@@ -413,7 +422,7 @@ footer { border-top: 1px solid var(--border); }
     <div class="hero-overlay"></div>
     <div class="hero-glow"></div>
     <div class="hero-inner hero-split">
-      <span class="hero-badge"><span class="dot"></span>A social enterprise</span>
+      <span class="hero-badge"><span class="dot"></span>A social entreprise</span>
       <h1>Hire beyond <br><span class="accent">the past.</span></h1>
       <div class="hero-paths">
         <div class="hero-path">
@@ -421,6 +430,7 @@ footer { border-top: 1px solid var(--border); }
           <p class="lead">Get reliable work done, fast. Vetted workers, milestone payments, no-show protection.</p>
           <a href="javascript:void(0)" class="btn btn-primary" onclick="openJoinModal('employer')">
             Hire a worker
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
         <div class="hero-path">
@@ -428,9 +438,11 @@ footer { border-top: 1px solid var(--border); }
           <p class="lead">Find verified work. Build your record. Fair pay, every time, tracked transparently.</p>
           <a href="javascript:void(0)" class="btn btn-outline" onclick="openJoinModal('worker')">
             Find work
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
       </div>
+      <a href="#how" class="btn btn-outline" style="margin-top:1.5rem; background:rgba(255,255,255,0.08); color:#fff; border-color:rgba(255,255,255,0.3)">How it works</a>
     </div>
   </section>
 
@@ -438,7 +450,7 @@ footer { border-top: 1px solid var(--border); }
   <section class="stats">
     <div class="wrap stats-grid">
       <div><div class="stat-k">15%</div><div class="stat-v">Flat commission, no hidden fees</div></div>
-      <div><div class="stat-k">GHS 180</div><div class="stat-v">Average task value</div></div>
+      <div><div class="stat-k">GHS 100</div><div class="stat-v">Average task value</div></div>
     </div>
   </section>
 
@@ -523,7 +535,7 @@ footer { border-top: 1px solid var(--border); }
     <div class="wrap">
       <div class="employers-head">
         <p class="eyebrow" style="color:rgba(255,255,255,0.85)">For employers</p>
-        <h2>Vetted workers. Verified tasks. No surprises.</h2>
+        <h2>Vetted workers. <span class="italic">Verified tasks. No surprises.</span></h2>
         <p class="lead">From small shops to growing businesses across Greater Accra, BeyondX gives you access to reliable, skilled workers with accountability built in at every step.</p>
       </div>
       <div class="benefit-simple-grid">
@@ -594,22 +606,14 @@ footer { border-top: 1px solid var(--border); }
           <h2>Let's build a workforce that works for everyone.</h2>
           <p id="cta-copy">Talk to our partnerships team about open roles, internships, or program sponsorship.<br><br>Or call us on: <b>0553608309</b></p>
         </div>
-        <div id="ctaFormWrap">
-          <form class="cta-form" id="ctaForm" onsubmit="return handleCtaSubmit(event)">
-            <div style="display:flex;gap:6px;margin-bottom:0.75rem;">
-              <button type="button" onclick="setCtaRole('worker')" id="ctaRoleWorker" class="btn btn-outline" style="flex:1;padding:0.5rem;font-size:0.8rem;">I'm a Worker</button>
-              <button type="button" onclick="setCtaRole('employer')" id="ctaRoleEmployer" class="btn btn-outline" style="flex:1;padding:0.5rem;font-size:0.8rem;">I'm an Employer</button>
-              <button type="button" onclick="setCtaRole('general')" id="ctaRoleGeneral" class="btn btn-outline" style="flex:1;padding:0.5rem;font-size:0.8rem;">General</button>
-            </div>
-            <input type="text" name="name" required placeholder="Your full name">
-            <input type="email" name="email" required placeholder="Enter your email address">
-            <textarea name="message" required placeholder="Tell us how you'd like to partner with or support BeyondX" rows="4"></textarea>
-            <button type="submit" class="btn btn-accent btn-full">
-              Get in touch
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
-          </form>
-        </div>
+        <form class="cta-form" id="ctaForm" onsubmit="return handleCtaSubmit(event)">
+          <input type="email" name="email" required placeholder="Enter your email address">
+          <textarea name="message" required placeholder="Tell us how you'd like to partner with or support BeyondX" rows="4"></textarea>
+          <button type="submit" class="btn btn-accent btn-full">
+            Get in touch
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
       </div>
     </div>
   </section>
@@ -666,10 +670,11 @@ footer { border-top: 1px solid var(--border); }
 </div>
 
 <script>
-  /* ── Join modal (now redirects to the main site's registration portal directly) ── */
+  /* ── Join modal ── */
   function openJoinModal(tab) {
-    var kind = (tab === 'worker') ? 'worker' : 'employer';
-    window.location.href = 'https://beyondx-frontend.vercel.app/?register=' + kind;
+    document.getElementById('joinModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    switchTab(tab || 'employer');
   }
   function closeJoinModal() {
     document.getElementById('joinModal').classList.remove('open');
@@ -732,142 +737,44 @@ footer { border-top: 1px solid var(--border); }
   }
 
   /* ── Contact CTA form ── */
-  var CTA_ROLE = 'general';
-  var CTA_DATA = { name:'', email:'', message:'' };
-
-  function setCtaRole(role){
-    CTA_ROLE = role;
-    ['worker','employer','general'].forEach(function(r){
-      var btn = document.getElementById('ctaRole' + r.charAt(0).toUpperCase() + r.slice(1));
-      if(!btn) return;
-      if(r === role){
-        btn.style.background = 'var(--accent)';
-        btn.style.color = '#fff';
-        btn.style.borderColor = 'var(--accent)';
-      } else {
-        btn.style.background = '';
-        btn.style.color = '';
-        btn.style.borderColor = '';
-      }
-    });
-  }
-
   function handleCtaSubmit(e) {
     e.preventDefault();
     var form = e.target;
     var submitBtn = form.querySelector('button[type=submit]');
-    var nameInput = form.querySelector('input[name=name]');
     var emailInput = form.querySelector('input[name=email]');
     var messageInput = form.querySelector('textarea[name=message]');
-    var name = nameInput.value.trim();
-    var email = emailInput.value.trim();
-    var message = messageInput.value.trim();
-    if(!name){ alert('Please enter your name.'); return false; }
-
-    CTA_DATA = { name: name, email: email, message: message };
+    var email = emailInput.value;
+    var message = messageInput.value;
+    var copy = document.getElementById('cta-copy');
     var originalBtnHtml = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
 
-    if(CTA_ROLE === 'worker' || CTA_ROLE === 'employer'){
-      // Don't send anything yet — move straight to the mandatory questions.
-      // The single combined email (message + answers) goes out only once
-      // they finish those, in submitCtaOnboarding().
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalBtnHtml;
-      renderCtaOnboarding();
-    } else {
-      sendCtaPayload({ name:name, email:email, message:message, category:'get_in_touch' }, function(ok, errMsg){
-        if(!ok){
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnHtml;
-          alert(errMsg || 'Something went wrong. Please try again.');
-          return;
-        }
-        form.innerHTML = '<span style="font-size:0.875rem; font-weight:500; color:var(--accent);">Thanks — we\'ll be in touch shortly.</span>';
-        document.getElementById('cta-copy').textContent = "We've received your message and will reach out about next steps.";
-      });
-    }
-    return false;
-  }
-
-  function sendCtaPayload(payload, cb){
     fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ email: email, message: message })
     })
       .then(function(res) { return res.json().then(function(body) { return { ok: res.ok, body: body }; }); })
       .then(function(result) {
-        if (!result.ok) { cb(false, result.body && result.body.error); return; }
-        cb(true);
+        if (!result.ok) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHtml;
+          alert(result.body.error || 'Something went wrong. Please try again.');
+          return;
+        }
+        form.innerHTML = '<span style="font-size:0.875rem; font-weight:500; color:var(--accent);">Thanks — we\'ll be in touch shortly.</span>';
+        copy.textContent = "We've received your message and will reach out about next steps.";
       })
       .catch(function(err) {
         console.error('Contact request failed:', err);
-        cb(false, 'Could not reach the server. Please check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+        alert('Could not reach the server. Please check your connection and try again.');
       });
+
+    return false;
   }
-
-  // This step is mandatory — no skip option — every worker/employer who
-  // reaches out gets asked these questions before the flow is considered done.
-  function renderCtaOnboarding(){
-    var firstName = CTA_DATA.name.split(' ')[0];
-    var welcome = "Welcome to BeyondX! Thank you for signing up. We are still in our early stages, currently recruiting more workers and employers to the platform. It will take about two weeks before we have your first task ready to dispatch. We will keep you updated along the way and reach out as soon as a job matches your skills. Thanks for being one of our first members, we are glad to have you.";
-    var workerQs = [
-      'How did you hear about BeyondX?',
-      'What made you decide to sign up?',
-      'What kind of work do you do or are best at?',
-      'Did you have any questions or concerns before joining?',
-      'Do you use a smartphone, or mostly calls and SMS?',
-      'What days and hours are you usually free to work?'
-    ];
-    var employerQs = [
-      'How did you hear about BeyondX?',
-      'What made you consider trying the platform?',
-      'What kind of tasks or roles are you looking to fill?',
-      'Did you have any concerns or hesitations before reaching out?',
-      'How often do you expect to need workers — one-off or ongoing?',
-      'What would make you trust a new worker enough to hire them?'
-    ];
-    var qs = CTA_ROLE === 'worker' ? workerQs : employerQs;
-    CTA_DATA.qs = qs;
-    var intro = CTA_ROLE === 'worker'
-      ? 'Hi! ' + firstName + ', just a few quick questions so we can get to know you better:'
-      : 'Hi! Thanks for your interest in BeyondX. A few quick questions to help us serve you better:';
-
-    var qFields = qs.map(function(q, i){
-      return '<div style="margin-bottom:0.65rem;"><label style="display:block;font-size:0.8rem;font-weight:600;margin-bottom:0.3rem;">' + (i+1) + '. ' + q + '</label>' +
-        '<textarea id="ctaq' + i + '" rows="2" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border,#ddd);border-radius:8px;font-size:0.85rem;font-family:inherit;resize:vertical;"></textarea></div>';
-    }).join('');
-
-    document.getElementById('ctaFormWrap').innerHTML =
-      '<div style="background:#fff;border-radius:12px;padding:1.25rem;">' +
-      '<div style="font-weight:700;font-size:1rem;margin-bottom:0.5rem;">You\'re in!</div>' +
-      '<div style="font-size:0.85rem;line-height:1.6;color:#555;margin-bottom:1rem;">' + welcome + '</div>' +
-      '<div style="font-size:0.85rem;font-weight:700;margin-bottom:0.75rem;">' + intro + '</div>' +
-      qFields +
-      '<button type="button" class="btn btn-accent btn-full" style="margin-top:0.5rem" onclick="submitCtaOnboarding()">Send My Answers</button>' +
-      '</div>';
-    document.getElementById('cta-copy').textContent = "Just a couple more questions and we'll be all set.";
-  }
-
-  function submitCtaOnboarding(){
-    var qCount = 6;
-    var qs = CTA_DATA.qs || [];
-    var answers = [];
-    for(var i=0;i<qCount;i++){
-      answers.push(document.getElementById('ctaq'+i).value.trim());
-    }
-    var fullMessage = CTA_DATA.message + '\n\n--- Onboarding Answers ---\n' +
-      answers.map(function(a, i){ return 'Q' + (i+1) + ': ' + (qs[i]||'') + '\nA: ' + (a || '(no answer)'); }).join('\n\n');
-
-    sendCtaPayload({ name:CTA_DATA.name, email:CTA_DATA.email, message:fullMessage, category: CTA_ROLE + '_onboarding' }, function(ok, errMsg){
-      if(!ok){ alert(errMsg || 'Something went wrong sending your answers. Please try again.'); return; }
-      document.getElementById('ctaFormWrap').innerHTML = '<span style="font-size:0.875rem; font-weight:500; color:var(--accent);">Thanks, ' + CTA_DATA.name.split(' ')[0] + '! This helps us match you to the right ' + (CTA_ROLE === 'worker' ? 'jobs' : 'people') + '.</span>';
-      document.getElementById('cta-copy').textContent = "We've received your answers and will reach out as soon as we have a match.";
-    });
-  }
-
   document.getElementById('joinModal').addEventListener('click', function(e) {
     if (e.target === this) closeJoinModal();
   });

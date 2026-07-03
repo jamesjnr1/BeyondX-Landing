@@ -1,17 +1,19 @@
 // /api/contact.js
-// Vercel Serverless Function — handles "Get in touch" form submissions.
-// Saves the lead to Supabase, then emails a notification to beyondx26@gmail.com via Resend.
+// Vercel Serverless Function — handles "Get in touch" form submissions,
+// including the mandatory worker/employer onboarding questions step.
+// Saves the lead to Supabase, then emails a notification via Resend to
+// BOTH edwina.ashigbui@ashesi.edu.gh and beyondx26@gmail.com.
 //
 // Required environment variables (set in Vercel Project Settings → Environment Variables):
 //   SUPABASE_URL              — your Supabase project URL
 //   SUPABASE_SERVICE_ROLE_KEY — Supabase service role key (server-side only, never expose to the browser)
 //   RESEND_API_KEY            — your Resend API key
-//   NOTIFY_EMAIL              — where notification emails get sent.
 //     IMPORTANT: while using Resend's test sender (onboarding@resend.dev) with
-//     no verified domain, this MUST be the exact email address your Resend
-//     account was signed up with — Resend will silently fail to deliver to
-//     any other address in sandbox mode. Once you verify a real domain, you
-//     can change this to beyondx26@gmail.com or any address you want.
+//     no verified domain, Resend's sandbox mode will only actually deliver to
+//     the exact email address your Resend account was signed up with — it
+//     will silently fail to deliver to any other address, including the two
+//     below. Once you verify a real domain in Resend, both recipients below
+//     will receive mail normally.
 
 const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
@@ -37,10 +39,7 @@ try {
   console.error('Resend client failed to initialize (non-fatal):', err);
 }
 
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
-if (!NOTIFY_EMAIL) {
-  console.error('NOTIFY_EMAIL environment variable is not set. Set it in Vercel → Settings → Environment Variables.');
-}
+const RECIPIENTS = ['edwina.ashigbui@ashesi.edu.gh', 'beyondx26@gmail.com'];
 
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -57,7 +56,8 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { email, message } = req.body || {};
+    const { name, email, message, category } = req.body || {};
+    const safeCategory = (typeof category === 'string' && category.trim()) ? category.trim() : 'get_in_touch';
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'A valid email address is required.' });
@@ -70,7 +70,7 @@ module.exports = async function handler(req, res) {
     // 1. Save the lead to Supabase so nothing is lost even if the email fails.
     const { error: dbError } = await supabase
       .from('contact_leads')
-      .insert([{ email, message, source: 'get_in_touch_form' }]);
+      .insert([{ name: name || null, email, message, source: safeCategory }]);
 
     if (dbError) {
       console.error('Supabase insert error:', dbError);
@@ -79,17 +79,25 @@ module.exports = async function handler(req, res) {
     }
 
     // 2. Send the notification email, if Resend is configured.
-    if (resend && NOTIFY_EMAIL) {
+    if (resend) {
+      const safeName = (name || 'Someone').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const categoryLabels = {
+        get_in_touch: 'New "Get in touch" request',
+        worker_onboarding: '👋 New Worker Onboarding',
+        employer_onboarding: '👋 New Employer Onboarding'
+      };
+      const subjectLine = `${categoryLabels[safeCategory] || 'New contact request'} — BeyondX`;
       const { error: emailError } = await resend.emails.send({
         from: 'BeyondX Website <onboarding@resend.dev>', // test sender — swap for your own verified domain later
-        to: [NOTIFY_EMAIL],
+        to: RECIPIENTS,
         reply_to: email,
-        subject: 'New "Get in touch" request — BeyondX',
+        subject: subjectLine,
         html: `
           <div style="font-family: sans-serif; max-width: 480px;">
-            <h2 style="color:#1A4731;">New contact request</h2>
-            <p>Someone just submitted the "Get in touch" form on the BeyondX landing page.</p>
+            <h2 style="color:#1A4731;">${subjectLine}</h2>
+            <p>Submitted via the "Get in touch" form on the BeyondX landing page.</p>
+            <p style="font-size:1.1rem;"><strong>Name:</strong> ${safeName}</p>
             <p style="font-size:1.1rem;"><strong>Email:</strong> ${email}</p>
             <p style="font-size:1rem; white-space:pre-wrap;"><strong>Message:</strong><br>${safeMessage}</p>
             <p style="color:#6B7280; font-size:0.85rem;">Reply directly to this email to respond to them.</p>
@@ -102,7 +110,7 @@ module.exports = async function handler(req, res) {
         return res.status(502).json({ error: 'Saved your request, but the notification email failed to send.' });
       }
     } else {
-      console.error('Skipped email notification: resend client or NOTIFY_EMAIL missing.');
+      console.error('Skipped email notification: resend client not configured.');
     }
 
     return res.status(200).json({ ok: true });
@@ -111,3 +119,4 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 };
+

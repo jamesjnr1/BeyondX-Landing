@@ -2,18 +2,15 @@
 // Vercel Serverless Function — handles "Get in touch" form submissions,
 // including the mandatory worker/employer onboarding questions step.
 // Saves the lead to Supabase, then emails a notification via Resend to
-// BOTH edwina.ashigbui@ashesi.edu.gh and beyondx26@gmail.com.
+// the address set in NOTIFY_EMAIL.
 //
 // Required environment variables (set in Vercel Project Settings → Environment Variables):
 //   SUPABASE_URL              — your Supabase project URL
 //   SUPABASE_SERVICE_ROLE_KEY — Supabase service role key (server-side only, never expose to the browser)
 //   RESEND_API_KEY            — your Resend API key
-//     IMPORTANT: while using Resend's test sender (onboarding@resend.dev) with
-//     no verified domain, Resend's sandbox mode will only actually deliver to
-//     the exact email address your Resend account was signed up with — it
-//     will silently fail to deliver to any other address, including the two
-//     below. Once you verify a real domain in Resend, both recipients below
-//     will receive mail normally.
+//   NOTIFY_EMAIL              — where notification emails get sent. Once beyondxco.com
+//     is verified in Resend, you can list multiple recipients here separated by
+//     commas, e.g. "person1@beyondxco.com,person2@gmail.com" — no code change needed.
 
 const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
@@ -39,8 +36,11 @@ try {
   console.error('Resend client failed to initialize (non-fatal):', err);
 }
 
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
-if (!NOTIFY_EMAIL) {
+const NOTIFY_EMAILS = (process.env.NOTIFY_EMAIL || '')
+  .split(',')
+  .map(e => e.trim())
+  .filter(Boolean);
+if (NOTIFY_EMAILS.length === 0) {
   console.error('NOTIFY_EMAIL environment variable is not set. Set it in Vercel → Settings → Environment Variables.');
 }
 
@@ -82,7 +82,7 @@ module.exports = async function handler(req, res) {
     }
 
     // 2. Send the notification email, if Resend is configured.
-    if (resend && NOTIFY_EMAIL) {
+    if (resend && NOTIFY_EMAILS.length > 0) {
       const safeName = (name || 'Someone').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const categoryLabels = {
@@ -92,8 +92,8 @@ module.exports = async function handler(req, res) {
       };
       const subjectLine = `${categoryLabels[safeCategory] || 'New contact request'} — BeyondX`;
       const { error: emailError } = await resend.emails.send({
-        from: 'BeyondX Website <onboarding@resend.dev>', // test sender — swap for your own verified domain later
-        to: [NOTIFY_EMAIL],
+        from: 'BeyondX <notifications@beyondxco.com>', // requires beyondxco.com verified in Resend — see setup note above
+        to: NOTIFY_EMAILS,
         reply_to: email,
         subject: subjectLine,
         html: `
@@ -113,7 +113,7 @@ module.exports = async function handler(req, res) {
         return res.status(502).json({ error: 'Saved your request, but the notification email failed to send.' });
       }
     } else {
-      console.error('Skipped email notification: resend client or NOTIFY_EMAIL missing.');
+      console.error('Skipped email notification: resend client not configured or no valid NOTIFY_EMAIL recipients.');
     }
 
     return res.status(200).json({ ok: true });
